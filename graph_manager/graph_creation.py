@@ -23,3 +23,4 @@ class GraphManager:
         G.add_nodes_from(computers)
 
         return G
+
