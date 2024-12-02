@@ -5,6 +5,15 @@ import networkx as nx
 from networkx.readwrite import json_graph
 from communication_manager.server import Server
 from graph_manager.graph_creation import GraphManager
+import configparser
+
+
+def get_server_config(file_path):
+    config = configparser.ConfigParser()
+    config.read(file_path)
+    host = config["server"]["host"]
+    port = int(config["server"]["port"])
+    return host, port
 
 
 async def handle_client(websocket, _):
@@ -15,7 +24,7 @@ async def handle_client(websocket, _):
 
         # Create the graph based on the configuration
         num_routers = config["num_routers"]
-        num_switches = config["num_distribution_switches"] + config["num_access_switches"]
+        num_switches = config["num_distribution_switches"]
         num_computers = config["num_devices"]
 
         graph_manager = GraphManager(num_routers, num_switches, num_computers)
@@ -31,8 +40,12 @@ async def handle_client(websocket, _):
 
 
 async def main():
-    server = await websockets.serve(handle_client, "localhost", 6789)
-    print("Server started on ws://localhost:6789")
+    # Get server configuration
+    host, port = get_server_config("config.ini")
+
+    # Start the WebSocket server
+    server = await websockets.serve(handle_client, host, port)
+    print(f"Server started on ws://{host}:{port}")
     await server.wait_closed()
 
 
