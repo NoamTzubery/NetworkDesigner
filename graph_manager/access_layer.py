@@ -38,30 +38,63 @@ def prims_minimum_spanning_tree(graph):
     return mst
 
 
-def create_vlan_topology(vlan_switches, vlan_computers):
+def create_fault_tolerant_network(switch_count, computer_count):
     """
-    Create a topology for a single VLAN.
+    Create a fault-tolerant network with redundancy.
     """
     G = nx.Graph()
 
-    # If no switches are available, add a placeholder switch
-    if not vlan_switches:
-        vlan_switches.append("Placeholder_Switch")
-
     # Add switches
-    G.add_nodes_from(vlan_switches)
+    switches = [f"Switch_{i}" for i in range(1, switch_count + 1)]
+    G.add_nodes_from(switches)
 
     # Add computers
-    G.add_nodes_from(vlan_computers)
+    computers = [f"Computer_{i}" for i in range(1, computer_count + 1)]
+    G.add_nodes_from(computers)
 
-    # Fully connect the switches
-    for i in range(len(vlan_switches)):
-        for j in range(i + 1, len(vlan_switches)):
-            G.add_edge(vlan_switches[i], vlan_switches[j], weight=1)
+    # Fully connect all switches for fault tolerance
+    for i in range(len(switches)):
+        for j in range(i + 1, len(switches)):
+            G.add_edge(switches[i], switches[j])
 
-    # Connect each computer to a switch
-    for i, computer in enumerate(vlan_computers):
-        G.add_edge(computer, vlan_switches[i % len(vlan_switches)], weight=1)
+    # Connect each computer to two switches for redundancy
+    for i, computer in enumerate(computers):
+        primary_switch = switches[i % switch_count]
+        secondary_switch = switches[(i + 1) % switch_count]
+        G.add_edge(computer, primary_switch)
+        G.add_edge(computer, secondary_switch)
+
+    return G
+
+
+def create_scalable_network(switch_count, computer_count):
+    """
+    Create a scalable network using a spanning tree.
+    """
+    G = nx.Graph()
+
+    # Add switches
+    switches = [f"Switch_{i}" for i in range(1, switch_count + 1)]
+    G.add_nodes_from(switches)
+
+    # Add computers
+    computers = [f"Computer_{i}" for i in range(1, computer_count + 1)]
+    G.add_nodes_from(computers)
+
+    # Fully connect the switches initially with random weights
+    for i in range(len(switches)):
+        for j in range(i + 1, len(switches)):
+            G.add_edge(switches[i], switches[j], weight=i + j)
+
+    # Generate a minimal spanning tree for the switches using Prim's algorithm
+    mst = prims_minimum_spanning_tree(G.subgraph(switches))
+
+    # Add the spanning tree back to the graph
+    G = nx.compose(G.subgraph(computers), mst)
+
+    # Connect each computer to one switch for scalability
+    for i, computer in enumerate(computers):
+        G.add_edge(computer, switches[i % switch_count])
 
     return G
 
@@ -70,47 +103,39 @@ def bin_packing_vlans(switch_count, computer_count):
     """
     Distribute switches and computers across VLANs in a simple round-robin fashion.
     """
-    # Create lists for switches and computers
     switches = [f"Switch_{i + 1}" for i in range(switch_count)]
     computers = [f"Computer_{i + 1}" for i in range(computer_count)]
 
-    # Combine all devices
     devices = switches + computers
-
-    # Calculate the number of VLANs needed
     num_vlans = math.ceil(len(devices) / 7)
 
-    # Initialize empty VLANs
     vlans = [[] for _ in range(num_vlans)]
-
-    # Assign devices to VLANs in a round-robin manner
     for i, device in enumerate(devices):
         vlans[i % num_vlans].append(device)
 
     return vlans
 
 
-def create_optimal_vlan_network(switch_count, computer_count):
+def create_optimal_vlan_network(switch_count, computer_count, mode):
     """
-    Determine the optimal number of VLANs and create their topologies.
+    Determine the optimal number of VLANs and create their topologies based on mode.
     """
-    # Bin-pack devices into VLANs
     vlans = bin_packing_vlans(switch_count, computer_count)
 
     G = nx.Graph()
-
-    # Create topologies for each VLAN
     for vlan_id, vlan_devices in enumerate(vlans):
         vlan_switches = [d for d in vlan_devices if "Switch" in d]
         vlan_computers = [d for d in vlan_devices if "Computer" in d]
 
-        vlan_graph = create_vlan_topology(vlan_switches, vlan_computers)
+        if mode == 0:  # Fault-tolerant
+            vlan_graph = create_fault_tolerant_network(len(vlan_switches), len(vlan_computers))
+        elif mode == 1:  # Scalable
+            vlan_graph = create_scalable_network(len(vlan_switches), len(vlan_computers))
+        else:
+            raise ValueError("Invalid mode. Use 0 for fault-tolerant or 1 for scalable.")
 
-        # Relabel nodes to include VLAN information
         mapping = {node: f"VLAN{vlan_id + 1}_{node}" for node in vlan_graph.nodes}
         vlan_graph = nx.relabel_nodes(vlan_graph, mapping)
-
-        # Add VLAN graph to the main graph
         G = nx.compose(G, vlan_graph)
 
     return G, vlans
@@ -130,11 +155,10 @@ def visualize_graph(G, title):
 # Example Usage
 switch_count = 8
 computer_count = 11
+mode = 1  # 0 for fault-tolerant, 1 for scalable
 
-# Generate optimal VLAN-based network
-optimal_vlan_graph, vlans = create_optimal_vlan_network(switch_count, computer_count)
+optimal_vlan_graph, vlans = create_optimal_vlan_network(switch_count, computer_count, mode)
 visualize_graph(optimal_vlan_graph, "Optimal VLAN-Based Network")
 
-# Print VLANs
 for i, vlan in enumerate(vlans):
     print(f"VLAN {i + 1}: {vlan}")
