@@ -3,20 +3,48 @@ import matplotlib.pyplot as plt
 import math
 
 
+class Device:
+    def __init__(self, name, device_type, routing=False):
+        """
+        device_type: "Router", "MultiLayerSwitch", "Switch", "Computer"
+        routing: Boolean indicating if device has routing capability
+        """
+        self.name = name
+        self.device_type = device_type
+        self.routing = routing
+
+
 class GraphManager:
-    def __init__(self, num_routers, num_switches, num_computers):
+    def __init__(self, num_routers, num_mls, num_switches, num_computers):
+        """
+        :param num_routers: Number of routers
+        :param num_mls: Number of multilayer (L3) switches
+        :param num_switches: Number of regular L2 switches
+        :param num_computers: Number of computers
+        """
+
         self.num_routers = num_routers
+        self.num_mls = num_mls
         self.num_switches = num_switches
         self.num_computers = num_computers
 
         # Naming each device
-        self.routers = [f'Router_{i + 1}' for i in range(self.num_routers)]
-        self.switches = [f'Switch_{i + 1}' for i in range(self.num_switches)]
-        self.computers = [f'Computer_{i + 1}' for i in range(self.num_computers)]
+        self.routers = [Device(f'Router_{i + 1}', "Router", routing=True) for i in range(num_routers)]
+        self.mls = [Device(f'MultiLayerSwitch_{i + 1}', "MultiLayerSwitch", routing=True) for i in range(num_mls)]
+        self.switches = [Device(f'Switch_{i + 1}', "Switch", routing=False) for i in range(num_switches)]
+        self.computers = [Device(f'Computer_{i + 1}', "Computer", routing=False) for i in range(num_computers)]
 
         self.graph = self.create_optimized_topology()
 
+        # Attempt to create the topology
+        if not self.assign_devices_to_layers():
+            print("We cannot create a valid 3-tier network with the given devices.")
+        else:
+            # Only add nodes/edges if successful
+            self.create_optimized_topology()
+
     def assign_devices_to_layers(self):
+
         layers = {
             "Core": [],
             "Distribution": [],
@@ -52,10 +80,6 @@ class GraphManager:
         G = nx.Graph()
 
         # Add routers, switches, and computers to the graph
-        self.routers = [f'Router_{i}' for i in range(self.num_routers)]
-        self.switches = [f'Switch_{i}' for i in range(self.num_switches)]
-        self.computers = [f'Computer_{i}' for i in range(self.num_computers)]
-
         G.add_nodes_from(self.routers)
         G.add_nodes_from(self.switches)
         G.add_nodes_from(self.computers)
