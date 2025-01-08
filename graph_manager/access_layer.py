@@ -81,7 +81,7 @@ def create_scalable_network(switch_count, computer_count):
     computers = [f"Computer_{i}" for i in range(1, computer_count + 1)]
     G.add_nodes_from(computers)
 
-    # Fully connect the switches initially with random weights
+    # Fully connect the switches initially
     for i in range(len(switches)):
         for j in range(i + 1, len(switches)):
             G.add_edge(switches[i], switches[j], weight=i + j)
@@ -153,8 +153,8 @@ def visualize_graph(G, title):
 
 
 # Example Usage
-switch_count = 8
-computer_count = 11
+switch_count = 2
+computer_count = 15
 mode = 1  # 0 for fault-tolerant, 1 for scalable
 
 optimal_vlan_graph, vlans = create_optimal_vlan_network(switch_count, computer_count, mode)
