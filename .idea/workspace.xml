@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="83b1ea81-f8f5-4782-913c-3466619c0f7d" name="Changes" comment="finished implementing the correct version and way for the access layer topology.">
-      <change afterPath="$PROJECT_DIR$/graph_manager/access_configuration.py" afterDir="false" />
+    <list default="true" id="83b1ea81-f8f5-4782-913c-3466619c0f7d" name="Changes" comment="adding the access level configuration and vlsm implementation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graph_manager/access_layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/graph_manager/access_layer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graph_manager/graph_creation.py" beforeDir="false" afterPath="$PROJECT_DIR$/graph_manager/graph_creation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +88,7 @@
       <workItem from="1730272672953" duration="3865000" />
       <workItem from="1730814658493" duration="42326000" />
       <workItem from="1733919575046" duration="6153000" />
-      <workItem from="1734341033798" duration="32361000" />
+      <workItem from="1734341033798" duration="35619000" />
     </task>
     <task id="LOCAL-00001" summary="started implementing the communication between the server and the client.">
       <option name="closed" value="true" />
@@ -131,7 +130,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735828785244</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="adding the access level configuration and vlsm implementation">
+      <option name="closed" value="true" />
+      <created>1736342953819</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1736342953819</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -154,10 +161,11 @@
     <MESSAGE value="going to try to implement a lot of changes so im saving a working base state in case it doesnt work" />
     <MESSAGE value="added the basic access layer topology. going to change it a bit in adding scalble variation and fault tolarant version" />
     <MESSAGE value="finished implementing the correct version and way for the access layer topology." />
-    <option name="LAST_COMMIT_MESSAGE" value="finished implementing the correct version and way for the access layer topology." />
+    <MESSAGE value="adding the access level configuration and vlsm implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding the access level configuration and vlsm implementation" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/NetworkDesigner$access_layer.coverage" NAME="access_layer Coverage Results" MODIFIED="1736337018259" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
+    <SUITE FILE_PATH="coverage/NetworkDesigner$access_layer.coverage" NAME="access_layer Coverage Results" MODIFIED="1736349691573" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$graph_creation.coverage" NAME="graph_creation Coverage Results" MODIFIED="1735212115288" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$main.coverage" NAME="main Coverage Results" MODIFIED="1733918891787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>

@@ -1,12 +1,21 @@
 import math
 
+# Constants
+MIN_BITS_FOR_NETWORK_BROADCAST = 2
+BYTE_MASK = 0xFF
+BITS_IN_BYTE = 8
+MAX_BITS_IN_IP = 32
+DEVICE_TYPE_SWITCH = "Switch"
+DEVICE_TYPE_COMPUTER = "Computer"
+
 
 def calculate_subnet_size(hosts):
     """
     Calculate the size of a subnet given the number of hosts.
     Includes room for network and broadcast addresses.
     """
-    return 2 ** math.ceil(math.log2(hosts + 2))  # +2 accounts for network and broadcast addresses
+    return 2 ** math.ceil(
+        math.log2(hosts + MIN_BITS_FOR_NETWORK_BROADCAST))  # +2 accounts for network and broadcast addresses
 
 
 def ip_to_int(ip):
@@ -14,14 +23,18 @@ def ip_to_int(ip):
     Convert an IP address from dotted decimal format to an integer.
     """
     octets = list(map(int, ip.split('.')))
-    return (octets[0] << 24) | (octets[1] << 16) | (octets[2] << 8) | octets[3]
+    return (octets[0] << (BITS_IN_BYTE * 3)) | (octets[1] << (BITS_IN_BYTE * 2)) | (octets[2] << BITS_IN_BYTE) | octets[
+        3]
 
 
 def int_to_ip(ip_int):
     """
     Convert an integer to an IP address in dotted decimal format.
     """
-    return f"{(ip_int >> 24) & 0xFF}.{(ip_int >> 16) & 0xFF}.{(ip_int >> 8) & 0xFF}.{ip_int & 0xFF}"
+    return f"{(ip_int >> (BITS_IN_BYTE * 3)) & BYTE_MASK}." \
+           f"{(ip_int >> (BITS_IN_BYTE * 2)) & BYTE_MASK}." \
+           f"{(ip_int >> BITS_IN_BYTE) & BYTE_MASK}." \
+           f"{ip_int & BYTE_MASK}"
 
 
 def calculate_vlsm(ip_base, total_hosts):
@@ -33,11 +46,11 @@ def calculate_vlsm(ip_base, total_hosts):
     subnets = []
 
     for size in subnet_sizes:
-        subnet_mask = 32 - int(math.log2(size))
+        subnet_mask = MAX_BITS_IN_IP - int(math.log2(size))
         subnets.append({
             "range": f"{int_to_ip(current_ip)}/{subnet_mask}",
             "first_ip": int_to_ip(current_ip + 1),
-            "last_ip": int_to_ip(current_ip + size - 2),
+            "last_ip": int_to_ip(current_ip + size - MIN_BITS_FOR_NETWORK_BROADCAST),
             "subnet_mask": subnet_mask,
             "size": size,
         })
@@ -53,7 +66,7 @@ def assign_ip_to_device(device_name, base_ip, offset):
     assigned_ip = int_to_ip(ip_to_int(base_ip) + offset)
     return {
         "name": device_name,
-        "type": "Switch" if "Switch" in device_name else "Computer",
+        "type": DEVICE_TYPE_SWITCH if DEVICE_TYPE_SWITCH in device_name else DEVICE_TYPE_COMPUTER,
         "ip_address": assigned_ip,
     }
 

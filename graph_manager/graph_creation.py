@@ -2,6 +2,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import math
 
+MINIMUM_ROUTING = 3
+SWITCHES_MINIMUM_MULTIPLIER = 7
+
 
 class Device:
     def __init__(self, name, device_type, routing=False):
@@ -50,9 +53,11 @@ class GraphManager:
             "Distribution": [],
             "Access": []
         }
+        if self.num_switches * SWITCHES_MINIMUM_MULTIPLIER > self.num_computers:
+            return 0
 
         # Assign Routers to Core Layer
-        if self.num_routers > 1:  # Enough routers for a core layer
+        if self.num_routers + self.num_mls > MINIMUM_ROUTING:  # Enough routers for a core layer
             layers["Core"].extend(self.routers)
             core_used = self.num_routers
         else:
