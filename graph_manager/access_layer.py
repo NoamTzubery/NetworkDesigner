@@ -13,7 +13,6 @@ def prims_minimum_spanning_tree(graph):
     # Start with the first node in the graph
     visited = {nodes[0]}
     edges = []
-
     # Add all edges from the starting node to the edge list
     for neighbor in graph.neighbors(nodes[0]):
         edges.append((nodes[0], neighbor, graph[nodes[0]][neighbor]['weight']))
@@ -151,14 +150,13 @@ def visualize_graph(G, title):
     plt.title(title, fontsize=16)
     plt.show()
 
-
 # Example Usage
-switch_count = 2
-computer_count = 15
-mode = 1  # 0 for fault-tolerant, 1 for scalable
+#switch_count = 3
+#computer_count = 15
+#mode = 1  # 0 for fault-tolerant, 1 for scalable
 
-optimal_vlan_graph, vlans = create_optimal_vlan_network(switch_count, computer_count, mode)
-visualize_graph(optimal_vlan_graph, "Optimal VLAN-Based Network")
+#optimal_vlan_graph, vlans = create_optimal_vlan_network(switch_count, computer_count, mode)
+#visualize_graph(optimal_vlan_graph, "Optimal VLAN-Based Network")
 
-for i, vlan in enumerate(vlans):
-    print(f"VLAN {i + 1}: {vlan}")
+#for i, vlan in enumerate(vlans):
+#    print(f"VLAN {i + 1}: {vlan}")

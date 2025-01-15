@@ -41,21 +41,44 @@ def calculate_vlsm(ip_base, total_hosts):
     """
     Assign IP ranges using VLSM based on the number of hosts.
     """
-    subnet_sizes = sorted([calculate_subnet_size(hosts) for hosts in total_hosts], reverse=True)
-    current_ip = ip_to_int(ip_base)
-    subnets = []
+    # Step 1: Calculate subnet sizes
+    subnet_sizes = []
+    for hosts in total_hosts:
+        subnet_size = calculate_subnet_size(hosts)
+        subnet_sizes.append(subnet_size)
 
-    for size in subnet_sizes:
-        subnet_mask = MAX_BITS_IN_IP - int(math.log2(size))
-        subnets.append({
-            "range": f"{int_to_ip(current_ip)}/{subnet_mask}",
-            "first_ip": int_to_ip(current_ip + 1),
-            "last_ip": int_to_ip(current_ip + size - MIN_BITS_FOR_NETWORK_BROADCAST),
+    # Sort subnet sizes in descending order
+    sorted_subnet_sizes = sorted(subnet_sizes, reverse=True)
+
+    # Step 2: Convert base IP to integer
+    current_ip = ip_to_int(ip_base)
+
+    # Step 3: Initialize subnets
+    subnets = []
+    for size in sorted_subnet_sizes:
+        # Calculate subnet mask
+        bits_needed = int(math.log2(size))
+        subnet_mask = MAX_BITS_IN_IP - bits_needed
+
+        # Calculate subnet details
+        range_ip = int_to_ip(current_ip)
+        first_ip = int_to_ip(current_ip + 1)
+        last_ip = int_to_ip(current_ip + size - MIN_BITS_FOR_NETWORK_BROADCAST)
+        subnet_details = {
+            "range": f"{range_ip}/{subnet_mask}",
+            "first_ip": first_ip,
+            "last_ip": last_ip,
             "subnet_mask": subnet_mask,
             "size": size,
-        })
+        }
+
+        # Append to subnets list
+        subnets.append(subnet_details)
+
+        # Update current_ip
         current_ip += size
 
+    # Return final subnets
     return subnets
 
 
@@ -63,33 +86,61 @@ def assign_ip_to_device(device_name, base_ip, offset):
     """
     Assign an IP address to a device based on a base IP and an offset.
     """
-    assigned_ip = int_to_ip(ip_to_int(base_ip) + offset)
-    return {
+    # Convert base IP to integer
+    base_ip_int = ip_to_int(base_ip)
+
+    # Calculate assigned IP
+    assigned_ip_int = base_ip_int + offset
+    assigned_ip = int_to_ip(assigned_ip_int)
+
+    # Determine device type
+    if DEVICE_TYPE_SWITCH in device_name:
+        device_type = DEVICE_TYPE_SWITCH
+    else:
+        device_type = DEVICE_TYPE_COMPUTER
+
+    # Create and return device configuration
+    device_config = {
         "name": device_name,
-        "type": DEVICE_TYPE_SWITCH if DEVICE_TYPE_SWITCH in device_name else DEVICE_TYPE_COMPUTER,
+        "type": device_type,
         "ip_address": assigned_ip,
     }
+    return device_config
 
 
 def configure_devices(vlans, ip_base):
     """
     Configure all devices with IPs, VLANs, and prepare for Telnet.
     """
-    total_hosts = [len(vlan) for vlan in vlans]
+    # Step 1: Calculate total hosts per VLAN
+    total_hosts = []
+    for vlan in vlans:
+        vlan_host_count = len(vlan)
+        total_hosts.append(vlan_host_count)
+
+    # Step 2: Calculate VLSM subnets
     vlsm_subnets = calculate_vlsm(ip_base, total_hosts)
 
+    # Step 3: Configure devices
     device_configurations = []
     for vlan_id, (vlan_devices, subnet) in enumerate(zip(vlans, vlsm_subnets), start=1):
+        # Extract subnet details
         gateway_ip = subnet["first_ip"]
+        subnet_mask = subnet["subnet_mask"]
+
+        # Assign IPs to devices
         for i, device in enumerate(vlan_devices):
             device_config = assign_ip_to_device(device, gateway_ip, i)
-            device_config.update({
-                "subnet_mask": subnet["subnet_mask"],
-                "vlan_id": vlan_id,
-                "gateway": gateway_ip,
-            })
+
+            # Add additional details to device configuration
+            device_config["subnet_mask"] = subnet_mask
+            device_config["vlan_id"] = vlan_id
+            device_config["gateway"] = gateway_ip
+
+            # Append to final configurations
             device_configurations.append(device_config)
 
+    # Return device configurations
     return device_configurations
 
 
