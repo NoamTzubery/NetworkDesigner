@@ -1,8 +1,9 @@
 import networkx as nx
 from access_layer import create_optimal_vlan_network, visualize_graph
 from access_configuration import configure_devices, display_device_configurations
+from top_layers import create_top_two_layers
 
-MINIMUM_ROUTING = 3
+MINIMUM_ROUTING = 4
 SWITCHES_MINIMUM_MULTIPLIER = 7
 
 
@@ -52,7 +53,7 @@ class GraphManager:
         print("Devices assigned to layers:", self.layers)
 
         # Create the topology
-        self.graph = self.create_optimized_topology()
+        self.access_graph, self.top_graph = self.create_optimized_topology()
 
     def assign_devices_to_layers(self):
         """
@@ -60,35 +61,33 @@ class GraphManager:
         Returns a dictionary with devices grouped by layer.
         """
         print("Assigning devices to layers...")
+
         layers = {
             "Core": [],
             "Distribution": [],
             "Access": []
         }
 
-        #if self.num_switches * SWITCHES_MINIMUM_MULTIPLIER < self.num_computers:
-        #    print("Insufficient computers to meet the switch multiplier requirement.")
-        #    return 0
+        # Combine and prioritize routing devices
+        routing_devices = sorted(self.routers + self.mls, key=lambda d: d.device_type == "MultiLayerSwitch",
+                                 reverse=True)
 
-        # Assign Routers to Core Layer
-        if self.num_routers + self.num_mls >= MINIMUM_ROUTING:  # Enough routers for a core layer
-            layers["Core"].extend(self.routers)
-            core_used = self.num_routers
-        else:
-            core_used = 0  # No core layer, assign routers elsewhere
+        # Check if there are enough routing devices for a three-tier topology
+        if len(routing_devices) < MINIMUM_ROUTING:
+            print("Not enough routing devices for a three-tier topology. Collapsing to two-tier topology.")
+            layers["Distribution"] = routing_devices  # All routing devices form the top layer
+            layers["Access"].extend(self.switches + self.computers)  # Non-routing devices form the bottom layer
+            return layers
 
-        # Assign Switches to Distribution and Access Layers
-        if core_used > 0:  # If we have a core layer
-            dist_switches = max(1, self.num_switches // 2)  # Assign enough switches for distribution
-            layers["Distribution"].extend(self.switches[:dist_switches])
-            layers["Access"].extend(self.switches[dist_switches:])
-        else:  # Merge core and distribution layers
-            dist_switches = max(1, (self.num_switches + core_used) // 2)
-            layers["Distribution"].extend(self.routers + self.switches[:dist_switches])
-            layers["Access"].extend(self.switches[dist_switches:])
+        # Assign Multi-Layer Switches to Core Layer first
+        core_devices = min(len(routing_devices), 2)  # At least two devices in Core
+        layers["Core"] = routing_devices[:core_devices]
 
-        # Assign Computers to Access Layer
-        layers["Access"].extend(self.computers)
+        # Remaining routing devices go to the Distribution Layer
+        layers["Distribution"] = routing_devices[core_devices:]
+
+        # Non-routing devices go to the Access Layer
+        layers["Access"].extend(self.switches + self.computers)
 
         print(f"Layer assignments:\nCore: {[device.name for device in layers['Core']]}\n"
               f"Distribution: {[device.name for device in layers['Distribution']]}\n"
@@ -100,7 +99,8 @@ class GraphManager:
         Create a complete topology by integrating access, distribution, and core layers.
         """
         print("Creating optimized topology...")
-        G = nx.Graph()
+        access_graph = nx.Graph()
+        top_graph = nx.Graph()
 
         # Access Layer: Create VLAN-based network
         vlan_devices = [device.name for device in self.layers["Access"]]
@@ -109,34 +109,38 @@ class GraphManager:
 
         print(f"Access layer devices:\nSwitches: {switches}\nComputers: {computers}")
         vlan_graph, vlans = create_optimal_vlan_network(len(switches), len(computers), self.mode)
-        G = nx.compose(G, vlan_graph)
+        access_graph = nx.compose(access_graph, vlan_graph)
 
         # Configure Access Layer Devices
         ip_base = "192.168.0.0"
-        device_configurations = configure_devices(vlans, ip_base)
-
+        device_configurations, main_access_switches = configure_devices(vlans, ip_base)
+        top_graph = create_top_two_layers(
+            [device.name for device in self.layers["Distribution"]],
+            [device.name for device in self.layers["Core"]],
+            main_access_switches
+        )
         # Display configurations
         print("\nDevice Configurations for Access Layer:")
         display_device_configurations(device_configurations)
+        print(main_access_switches)
 
         # Future: Add Core and Distribution Layers
         print("Topology created with access layer (core/distribution layers are placeholders).")
-        return G
+        return access_graph, top_graph
 
     def draw_topology(self):
         """
         Visualize the created network topology.
         """
         print("Visualizing the network topology...")
-        visualize_graph(self.graph, "Three-Tier Network Topology")
+        visualize_graph(self.access_graph, "Three-Tier Network Topology")
 
 
 # Example usage
 if __name__ == "__main__":
-
     num_routers = 2
     num_mls = 2
-    num_switches = 5
+    num_switches = 4
     num_computers = 15
     mode = 1  # 0 for fault-tolerant, 1 for scalable
 

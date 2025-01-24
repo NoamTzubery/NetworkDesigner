@@ -1,7 +1,7 @@
 import math
 
 # Constants
-MIN_BITS_FOR_NETWORK_BROADCAST = 2
+MIN_BITS_FOR_NETWORK_BROADCAST_AND_GATEWAY = 3  # Accounts for network, broadcast, and gateway addresses
 BYTE_MASK = 0xFF
 BITS_IN_BYTE = 8
 MAX_BITS_IN_IP = 32
@@ -12,10 +12,10 @@ DEVICE_TYPE_COMPUTER = "Computer"
 def calculate_subnet_size(hosts):
     """
     Calculate the size of a subnet given the number of hosts.
-    Includes room for network and broadcast addresses.
+    Includes room for network, broadcast, and gateway addresses.
     """
     return 2 ** math.ceil(
-        math.log2(hosts + MIN_BITS_FOR_NETWORK_BROADCAST))  # +2 accounts for network and broadcast addresses
+        math.log2(hosts + MIN_BITS_FOR_NETWORK_BROADCAST_AND_GATEWAY))
 
 
 def ip_to_int(ip):
@@ -62,8 +62,8 @@ def calculate_vlsm(ip_base, total_hosts):
 
         # Calculate subnet details
         range_ip = int_to_ip(current_ip)
-        first_ip = int_to_ip(current_ip + 1)
-        last_ip = int_to_ip(current_ip + size - MIN_BITS_FOR_NETWORK_BROADCAST)
+        first_ip = int_to_ip(current_ip + 1)  # Default gateway
+        last_ip = int_to_ip(current_ip + size - MIN_BITS_FOR_NETWORK_BROADCAST_AND_GATEWAY)
         subnet_details = {
             "range": f"{range_ip}/{subnet_mask}",
             "first_ip": first_ip,
@@ -123,15 +123,19 @@ def configure_devices(vlans, ip_base):
 
     # Step 3: Configure devices
     device_configurations = []
-    for vlan_id, (vlan_devices, subnet) in enumerate(zip(vlans, vlsm_subnets), start=1):
+    main_switches = []
+    first = True
+    for vlan_id, (vlan_devices, subnet) in enumerate(zip(vlans, vlsm_subnets), start=2):
         # Extract subnet details
-        gateway_ip = subnet["first_ip"]
+        gateway_ip = subnet["first_ip"]  # First usable IP is the gateway
         subnet_mask = subnet["subnet_mask"]
-
+        first = True
         # Assign IPs to devices
         for i, device in enumerate(vlan_devices):
-            device_config = assign_ip_to_device(device, gateway_ip, i)
-
+            device_config = assign_ip_to_device(device, gateway_ip, i + 1)  # Start assigning from gateway + 1
+            if first:
+                main_switches.append(device)
+                first = False
             # Add additional details to device configuration
             device_config["subnet_mask"] = subnet_mask
             device_config["vlan_id"] = vlan_id
@@ -141,7 +145,7 @@ def configure_devices(vlans, ip_base):
             device_configurations.append(device_config)
 
     # Return device configurations
-    return device_configurations
+    return device_configurations, main_switches
 
 
 def display_device_configurations(device_configurations):
