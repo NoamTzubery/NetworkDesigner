@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="83b1ea81-f8f5-4782-913c-3466619c0f7d" name="Changes" comment="changed the graph_creation.py to be in line with fixes for access config. plus added a basic top 2 layers graph creation.">
+    <list default="true" id="83b1ea81-f8f5-4782-913c-3466619c0f7d" name="Changes" comment="improved the top_layers.py.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graph_manager/access_configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/graph_manager/access_configuration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/graph_manager/graph_creation.py" beforeDir="false" afterPath="$PROJECT_DIR$/graph_manager/graph_creation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graph_manager/top_layers.py" beforeDir="false" afterPath="$PROJECT_DIR$/graph_manager/top_layers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graph_manager/top_layers_configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/graph_manager/top_layers_configuration.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +53,7 @@
     "Python.graph_creation.executor": "Run",
     "Python.main.executor": "Run",
     "Python.top_layers.executor": "Run",
+    "Python.top_layers_configuration.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "develop",
     "last_opened_file_path": "C:/Users/anima/PycharmProjects/NetworkDesigner/communication_manager",
@@ -92,7 +94,7 @@
       <workItem from="1730814658493" duration="42326000" />
       <workItem from="1733919575046" duration="6153000" />
       <workItem from="1734341033798" duration="35619000" />
-      <workItem from="1736491544910" duration="50529000" />
+      <workItem from="1736491544910" duration="64056000" />
     </task>
     <task id="LOCAL-00001" summary="started implementing the communication between the server and the client.">
       <option name="closed" value="true" />
@@ -166,7 +168,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737707293379</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="improved the top_layers.py.">
+      <option name="closed" value="true" />
+      <created>1738137455904</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1738137455904</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -193,13 +203,15 @@
     <MESSAGE value="adding a commit before starting to try implementing the access_configuration.py and access_layer to the graph_creation.py" />
     <MESSAGE value="fixed problems with configuration and access graph. plus adding this commit before changing the graph_creation.py to also include the multi layered switches" />
     <MESSAGE value="changed the graph_creation.py to be in line with fixes for access config. plus added a basic top 2 layers graph creation." />
-    <option name="LAST_COMMIT_MESSAGE" value="changed the graph_creation.py to be in line with fixes for access config. plus added a basic top 2 layers graph creation." />
+    <MESSAGE value="improved the top_layers.py." />
+    <option name="LAST_COMMIT_MESSAGE" value="improved the top_layers.py." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/NetworkDesigner$top_layers_configuration.coverage" NAME="top_layers_configuration Coverage Results" MODIFIED="1738158447233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$access_configuration.coverage" NAME="access_configuration Coverage Results" MODIFIED="1737371970335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$access_layer.coverage" NAME="access_layer Coverage Results" MODIFIED="1736674789150" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$top_layers.coverage" NAME="top_layers Coverage Results" MODIFIED="1737975084575" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
-    <SUITE FILE_PATH="coverage/NetworkDesigner$graph_creation.coverage" NAME="graph_creation Coverage Results" MODIFIED="1737983088326" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
+    <SUITE FILE_PATH="coverage/NetworkDesigner$graph_creation.coverage" NAME="graph_creation Coverage Results" MODIFIED="1738156329981" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$main.coverage" NAME="main Coverage Results" MODIFIED="1733918891787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -69,8 +69,7 @@ class GraphManager:
         }
 
         # Combine and prioritize routing devices
-        routing_devices = sorted(self.routers + self.mls, key=lambda d: d.device_type == "MultiLayerSwitch",
-                                 reverse=True)
+        routing_devices = sorted(self.routers + self.mls, key=lambda d: d.device_type == "Router", reverse=True)
 
         # Check if there are enough routing devices for a three-tier topology
         if len(routing_devices) < MINIMUM_ROUTING:
@@ -123,6 +122,14 @@ class GraphManager:
         print("\nDevice Configurations for Access Layer:")
         display_device_configurations(device_configurations)
         print(main_access_switches)
+
+        # Extract only main access switch configurations
+        main_switch_configurations = [config for config in device_configurations if config["name"] in
+                                      main_access_switches]
+
+        # Print or return main_switch_configurations as needed
+        print("\nMain Access Switch Configurations:")
+        display_device_configurations(main_switch_configurations)
 
         # Future: Add Core and Distribution Layers
         print("Topology created with access layer (core/distribution layers are placeholders).")

@@ -18,9 +18,10 @@ def calculate_subnet_size(hosts):
         math.log2(hosts + MIN_BITS_FOR_NETWORK_BROADCAST_AND_GATEWAY))
 
 
-def ip_to_int(ip):
+def ip_to_int(ip: str) -> int:
     """
-    Convert an IP address from dotted decimal format to an integer.
+    :param ip:
+    :return int:
     """
     octets = list(map(int, ip.split('.')))
     return (octets[0] << (BITS_IN_BYTE * 3)) | (octets[1] << (BITS_IN_BYTE * 2)) | (octets[2] << BITS_IN_BYTE) | octets[
@@ -125,7 +126,7 @@ def configure_devices(vlans, ip_base):
     device_configurations = []
     main_switches = []
     first = True
-    for vlan_id, (vlan_devices, subnet) in enumerate(zip(vlans, vlsm_subnets), start=2):
+    for vlan_id, (vlan_devices, subnet) in enumerate(zip(vlans, vlsm_subnets), start=1):
         # Extract subnet details
         gateway_ip = subnet["first_ip"]  # First usable IP is the gateway
         subnet_mask = subnet["subnet_mask"]
