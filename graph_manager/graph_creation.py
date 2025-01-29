@@ -1,7 +1,7 @@
 import networkx as nx
 from access_layer import create_optimal_vlan_network, visualize_graph
 from access_configuration import configure_devices, display_device_configurations
-from top_layers import create_top_two_layers
+from top_layers import build_topology
 
 MINIMUM_ROUTING = 4
 SWITCHES_MINIMUM_MULTIPLIER = 7
@@ -114,7 +114,7 @@ class GraphManager:
         # Configure Access Layer Devices
         ip_base = "192.168.0.0"
         device_configurations, main_access_switches = configure_devices(vlans, ip_base)
-        top_graph = create_top_two_layers(
+        top_graph = build_topology(
             [device.name for device in self.layers["Distribution"]],
             [device.name for device in self.layers["Core"]],
             main_access_switches

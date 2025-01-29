@@ -2,34 +2,74 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-def create_top_two_layers(distribution, core, main_access_switches):
+def create_core_layer(core_devices, dist_devices):
     """
-    Creates the top two layers (Distribution and Core) of a 3-tier network topology.
+    Connects the Core layer to the Distribution layer.
 
-    :param distribution: List of distribution layer devices
-    :param core: List of core layer devices
-    :param main_access_switches: List of main access switches to connect to the distribution layer
-    :return: A NetworkX graph representing the top two layers
+    :param core_devices: List of Core layer devices
+    :param dist_devices: List of Distribution layer devices
+    :return: A list of edges connecting Core to Distribution
     """
-    print("Creating the top two layers of the network topology...")
-    G = nx.DiGraph()  # Directed graph for clear hierarchy
+    edges = []
+    for core_device in core_devices:
+        for dist_device in dist_devices:
+            edges.append((core_device, dist_device))
+    return edges
 
-    # Add Core and Distribution nodes
-    G.add_nodes_from(core, layer='Core')
-    G.add_nodes_from(distribution, layer='Distribution')
 
-    # Add edges between Core and Distribution layers
-    for core_device in core:
-        for dist_device in distribution:
-            G.add_edge(core_device, dist_device)
+def create_distribution_layer(dist_devices, access_switches):
+    """
+    Connects the Distribution layer to the Access layer and interconnects Distribution devices.
 
-    # Add Access nodes and connect them to Distribution nodes
-    G.add_nodes_from(main_access_switches, layer='Access')
-    for dist_device in distribution:
-        for access_switch in main_access_switches:
-            G.add_edge(dist_device, access_switch)  # Access connects only to Distribution
+    :param dist_devices: List of Distribution layer devices
+    :param access_switches: List of Access layer switches
+    :return: A list of edges connecting Distribution to Access and between Distribution devices
+    """
+    edges = []
+    # Connect Distribution to Access
+    for dist_device in dist_devices:
+        for access_switch in access_switches:
+            edges.append((dist_device, access_switch))
+    # Interconnect Distribution devices for redundancy
+    for i in range(len(dist_devices)):
+        for j in range(i + 1, len(dist_devices)):
+            edges.append((dist_devices[i], dist_devices[j]))
+    return edges
 
-    print("Top two layers created successfully!")
+
+def build_topology(core_devices, dist_devices, access_switches):
+    """
+    Builds a three-tier network topology. If the Core layer is empty,
+    collapses the topology to two tiers by moving routing to the Distribution layer.
+
+    :param core_devices: List of Core layer devices
+    :param dist_devices: List of Distribution layer devices
+    :param access_switches: List of Access layer switches
+    :return: A NetworkX DiGraph representing the network topology
+    """
+    print("Building the network topology...")
+    G = nx.DiGraph()
+
+    # Add devices to the graph
+    G.add_nodes_from(core_devices, layer='Core')
+    G.add_nodes_from(dist_devices, layer='Distribution')
+    G.add_nodes_from(access_switches, layer='Access')
+
+    # Create edges based on the layers
+    if core_devices:
+        # Three-tier topology
+        print("Creating a three-tier topology.")
+        G.add_edges_from(create_core_layer(core_devices, dist_devices))
+    else:
+        # Collapsed to two tiers
+        print("Core layer is empty, collapsing to two-tier topology.")
+        # All distribution devices are now core devices
+        for dist_device in dist_devices:
+            G.nodes[dist_device]['layer'] = 'Core'
+
+    G.add_edges_from(create_distribution_layer(dist_devices, access_switches))
+
+    print("Network topology built successfully!")
     return G
 
 
@@ -39,54 +79,39 @@ def draw_topology(G):
 
     :param G: A NetworkX graph representing the network topology
     """
-    pos = {}  # Custom position for each node to create a layered structure
-
-    # Define layers with fixed y-coordinates
+    print("Drawing the network topology...")
+    pos = {}
     layers = {
         'Core': 0.9,
         'Distribution': 0.6,
         'Access': 0.3
     }
 
-    # Assign layers to nodes
-    # Default to the "Access" layer if the 'layer' attribute is missing
+    # Determine positions for nodes in each layer
     node_layers = {node: data.get('layer', 'Access') for node, data in G.nodes(data=True)}
-
-    # Separate nodes by their layer
-    core_nodes = [node for node, layer in node_layers.items() if layer == 'Core']
-    distribution_nodes = [node for node, layer in node_layers.items() if layer == 'Distribution']
-    access_nodes = [node for node, layer in node_layers.items() if layer == 'Access']
-
-    # Define horizontal spacing for clarity
     spacing = 1.5
-    pos.update({node: (i * spacing, layers['Core']) for i, node in enumerate(core_nodes)})
-    pos.update({node: (i * spacing, layers['Distribution']) for i, node in enumerate(distribution_nodes)})
-    pos.update({node: (i * spacing, layers['Access']) for i, node in enumerate(access_nodes)})
 
-    # Ensure all nodes have positions
-    for node in G.nodes():
-        if node not in pos:
-            pos[node] = (0, 0)  # Assign a default position for safety
+    for layer_name, y_coord in layers.items():
+        nodes_in_layer = [node for node, layer in node_layers.items() if layer == layer_name]
+        for i, node in enumerate(nodes_in_layer):
+            pos[node] = (i * spacing, y_coord)
 
     # Draw the graph
     plt.figure(figsize=(12, 8))
     nx.draw_networkx_nodes(G, pos, node_size=700, node_color='skyblue')
     nx.draw_networkx_edges(G, pos, edge_color='gray')
     nx.draw_networkx_labels(G, pos, font_size=10, font_family='sans-serif')
-    plt.title("Top Two Layers - Network Topology Visualization", fontsize=14)
+    plt.title("Network Topology Visualization", fontsize=14)
     plt.axis('off')
     plt.show()
 
 
-# Debug file
 if __name__ == "__main__":
-    # Example lists for testing
-    distribution_devices = ["Dist_1", "Dist_2"]
-    core_devices = ["Core_1", "Core_2"]
-    main_access_switches = ["Access_1", "Access_2", "Access_3"]
+    # Define devices in each layer
+    core_devices = ["Core_1", "Core_2"]  # Change to an empty list to test two-tier topology
+    distribution_devices = ["Dist_1", "Dist_2", "Dist_3"]
+    access_switches = ["Access_1", "Access_2", "Access_3", "Access_4"]
 
-    # Create the graph for the top two layers
-    G = create_top_two_layers(distribution_devices, core_devices, main_access_switches)
-
-    # Draw the graph
-    draw_topology(G)
+    # Build and visualize the topology
+    network_graph = build_topology(core_devices, distribution_devices, access_switches)
+    draw_topology(network_graph)
