@@ -53,7 +53,7 @@ class GraphManager:
         print("Devices assigned to layers:", self.layers)
 
         # Create the topology
-        self.access_graph, self.top_graph = self.create_optimized_topology()
+        self.access_graph, self.top_graph, self.access_device_config = self.create_optimized_topology()
 
     def assign_devices_to_layers(self):
         """
@@ -133,7 +133,7 @@ class GraphManager:
 
         # Future: Add Core and Distribution Layers
         print("Topology created with access layer (core/distribution layers are placeholders).")
-        return access_graph, top_graph
+        return access_graph, top_graph, device_configurations
 
     def draw_topology(self):
         """
@@ -141,6 +141,14 @@ class GraphManager:
         """
         print("Visualizing the network topology...")
         visualize_graph(self.access_graph, "Three-Tier Network Topology")
+
+    def get_device_configuration(self, device_name):
+        """
+
+        :param device_name:
+        :return: the device configuration requested
+        """
+        return next((config for config in self.access_device_config if config["name"] == device_name), None)
 
 
 # Example usage
