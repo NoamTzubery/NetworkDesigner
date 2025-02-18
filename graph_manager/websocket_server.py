@@ -19,9 +19,10 @@ async def handler(websocket, path):
         num_switches = data.get('num_switches', 4)
         num_computers = data.get('num_computers', 15)
         mode = data.get('mode', 1)
+        ip_base = data.get('ip_base', "192.168.0.0")
 
         # Instantiate your GraphManager with the received parameters.
-        graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode)
+        graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode, ip_base)
 
         # Serialize the networkx graphs into a JSON-friendly format.
         access_graph_data = json_graph.node_link_data(graph_manager.access_graph)

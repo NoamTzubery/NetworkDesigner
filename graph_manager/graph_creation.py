@@ -19,7 +19,7 @@ class Device:
 
 
 class GraphManager:
-    def __init__(self, num_routers, num_mls, num_switches, num_computers, mode=1):
+    def __init__(self, num_routers, num_mls, num_switches, num_computers, mode=1, ip_base="192.168.0.0"):
         """
         :param num_routers: Number of routers
         :param num_mls: Number of multilayer (L3) switches
@@ -27,6 +27,7 @@ class GraphManager:
         :param num_computers: Number of computers
         :param mode: Network mode (0: fault-tolerant, 1: scalable)
         """
+
         print(f"Initializing GraphManager with:\n"
               f"Routers: {num_routers}, MLS: {num_mls}, Switches: {num_switches}, Computers: {num_computers}, Mode: {mode}")
 
@@ -34,6 +35,7 @@ class GraphManager:
         self.num_mls = num_mls
         self.num_switches = num_switches
         self.num_computers = num_computers
+        self.ip_base = ip_base
         self.mode = mode
 
         # Naming devices
@@ -111,8 +113,8 @@ class GraphManager:
         access_graph = nx.compose(access_graph, vlan_graph)
 
         # Configure Access Layer Devices
-        ip_base = "192.168.0.0"
-        device_configurations, main_access_switches = configure_devices(vlans, ip_base)
+
+        device_configurations, main_access_switches = configure_devices(vlans, self.ip_base)
         top_graph = build_topology(
             [device.name for device in self.layers["Distribution"]],
             [device.name for device in self.layers["Core"]],
@@ -158,8 +160,9 @@ if __name__ == "__main__":
     num_switches = 4
     num_computers = 15
     mode = 1  # 0 for fault-tolerant, 1 for scalable
+    ip_base = "192.168.0.0"
 
     print("Starting GraphManager...")
-    graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode)
+    graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode, ip_base)
     graph_manager.draw_topology()
     print("GraphManager finished execution.")
