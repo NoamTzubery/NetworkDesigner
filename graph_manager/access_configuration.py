@@ -1,4 +1,6 @@
 import math
+import telnetlib
+import time
 
 # Constants
 MIN_BITS_FOR_NETWORK_BROADCAST_AND_GATEWAY = 3  # Accounts for network, broadcast, and gateway addresses
@@ -161,3 +163,94 @@ def display_device_configurations(device_configurations):
         print(f"VLAN ID: {device['vlan_id']}")
         print(f"Gateway: {device['gateway']}")
         print("-" * 30)
+
+
+def configure_device_via_telnet(device_name, port, device_configurations):
+    """
+    Configure a network device using Telnet based on its stored configuration.
+
+    :param device_name: The name of the device to configure.
+    :param port: The local port assigned to this device.
+    :param device_configurations: A list of dictionaries containing device configurations.
+    """
+    # Find the device in the configurations
+    device = next((d for d in device_configurations if d["name"] == device_name), None)
+
+    if not device:
+        print(f"Error: Device '{device_name}' not found in configurations.")
+        return
+
+    device_type = device["type"]
+    ip_address = device.get("ip_address")
+    subnet_mask = device.get("subnet_mask")
+    gateway = device.get("gateway")
+    vlan_id = device.get("vlan_id", None)  # Only for switches
+
+    try:
+        port = int(port)  # Ensure port is a number
+    except ValueError:
+        print(f"Invalid port number: {port}. Please enter a valid number.")
+        return
+
+    print(f"\nConnecting to {device_name} on localhost:{port} via Telnet...")
+
+    try:
+        # Open Telnet session to the local device
+        tn = telnetlib.Telnet("localhost", port, timeout=5)
+        time.sleep(1)  # Allow connection to establish
+
+        if device_type.lower() == "switch":
+            print(f"Configuring {device_name} as a Switch...")
+
+            # Enter privileged mode
+            tn.write(b"enable\n")
+            time.sleep(1)
+            tn.write(b"configure terminal\n")
+            time.sleep(1)
+
+            # Apply VLAN configuration if available
+            if vlan_id:
+                tn.write(f"vlan {vlan_id}\n".encode('ascii'))
+                time.sleep(1)
+
+            # Set Store-and-Forward Mode
+            tn.write(b"spanning-tree mode mst\n")
+            time.sleep(1)
+            tn.write(b"spanning-tree forwarding-mode store-and-forward\n")
+            time.sleep(1)
+
+            # Save configuration
+            tn.write(b"exit\n")
+            time.sleep(1)
+            tn.write(b"write memory\n")
+            time.sleep(1)
+
+        elif device_type.lower() == "computer":
+            if not ip_address or not subnet_mask or not gateway:
+                print(f"Skipping configuration for {device_name}: Missing network parameters.")
+                tn.close()
+                return
+
+            print(f"Configuring {device_name} as a Computer...")
+
+            # Assign IP and Subnet Mask
+            tn.write(f"ifconfig eth0 {ip_address} netmask {subnet_mask}\n".encode('ascii'))
+            time.sleep(1)
+
+            # Assign Default Gateway
+            tn.write(f"route add default gw {gateway}\n".encode('ascii'))
+            time.sleep(1)
+
+        else:
+            print(f"Unknown device type: {device_type}. Skipping configuration.")
+            tn.close()
+            return
+
+        # Close Telnet session
+        tn.write(b"exit\n")
+        tn.close()
+        print(f"Configuration applied to {device_name} successfully.")
+
+    except Exception as e:
+        print(f"Failed to configure {device_name} at localhost:{port}. Error: {e}")
+

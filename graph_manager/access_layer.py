@@ -112,6 +112,10 @@ def bin_packing_vlans(switch_count, computer_count):
     for i, device in enumerate(devices):
         vlans[i % num_vlans].append(device)
 
+    for i, vlan in enumerate(vlans, start=1):
+        print(f"VLAN {i}: {', '.join(vlan)}")
+
+
     return vlans
 
 
@@ -122,6 +126,8 @@ def create_optimal_vlan_network(switch_count, computer_count, mode):
     vlans = bin_packing_vlans(switch_count, computer_count)
 
     G = nx.Graph()
+    vlan_mapping = {}  # Dictionary to store VLAN assignment per node
+
     for vlan_id, vlan_devices in enumerate(vlans):
         vlan_switches = [d for d in vlan_devices if "Switch" in d]
         vlan_computers = [d for d in vlan_devices if "Computer" in d]
@@ -133,9 +139,18 @@ def create_optimal_vlan_network(switch_count, computer_count, mode):
         else:
             raise ValueError("Invalid mode. Use 0 for fault-tolerant or 1 for scalable.")
 
+        # Relabel nodes with VLAN prefix and store VLAN information
         mapping = {node: f"VLAN{vlan_id + 1}_{node}" for node in vlan_graph.nodes}
         vlan_graph = nx.relabel_nodes(vlan_graph, mapping)
+
+        # Add VLAN attribute to nodes
+        for node in vlan_graph.nodes():
+            vlan_mapping[node] = vlan_id + 1  # VLAN IDs start from 1
+
         G = nx.compose(G, vlan_graph)
+
+    # Assign VLAN attributes to the nodes in the final graph
+    nx.set_node_attributes(G, vlan_mapping, "vlan")
 
     return G, vlans
 
@@ -143,20 +158,24 @@ def create_optimal_vlan_network(switch_count, computer_count, mode):
 def visualize_graph(G, title):
     plt.figure(figsize=(12, 10))
     pos = nx.spring_layout(G, k=0.5, iterations=50)
+    node_colors = [G.nodes[node].get("vlan", 0) for node in G.nodes()]
+
     nx.draw(
-        G, pos, with_labels=True, node_color='lightblue',
-        edge_color='gray', node_size=2000, font_weight='bold'
+        G, pos, with_labels=True, node_color=node_colors,
+        edge_color='gray', node_size=2000, font_weight='bold', cmap=plt.cm.Paired
     )
     plt.title(title, fontsize=16)
     plt.show()
 
+
 # Example Usage
-#switch_count = 3
-#computer_count = 15
-#mode = 1  # 0 for fault-tolerant, 1 for scalable
+switch_count = 4
+computer_count = 15
+mode = 1  # 0 for fault-tolerant, 1 for scalable
 
-#optimal_vlan_graph, vlans = create_optimal_vlan_network(switch_count, computer_count, mode)
-#visualize_graph(optimal_vlan_graph, "Optimal VLAN-Based Network")
+optimal_vlan_graph, vlans = create_optimal_vlan_network(switch_count, computer_count, mode)
+visualize_graph(optimal_vlan_graph, "Optimal VLAN-Based Network")
 
-#for i, vlan in enumerate(vlans):
-#    print(f"VLAN {i + 1}: {vlan}")
+# Print VLAN assignments
+for node, vlan_id in optimal_vlan_graph.nodes(data="vlan"):
+    print(f"{node} -> VLAN {vlan_id}")
