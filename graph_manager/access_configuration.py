@@ -253,4 +253,3 @@ def configure_device_via_telnet(device_name, port, device_configurations):
 
     except Exception as e:
         print(f"Failed to configure {device_name} at localhost:{port}. Error: {e}")
-
