@@ -60,19 +60,19 @@ def create_device_config(device_name, device_type, assigned_ip, subnet_mask, con
     }
 
 
-def configure_top_layers(dist_devices, core_devices, ip_base):
+def configure_top_layers(dist_devices, core_devices, access_switches, ip_base):
     """
     Configure the Core and Distribution layers, including handling collapsed layers.
     """
     device_configurations = []
-
+    num_switches = len(access_switches)
     # Check if we have Core devices
     if core_devices:
         print("Configuring 3-tier network (Core + Distribution)...")
         # Handle 3-tier network: Core + Distribution
         for i, device in enumerate(dist_devices):
             assigned_ip, device_type = assign_ip_to_device(device, ip_base, i)
-            device_config = create_device_config(device, device_type, assigned_ip, "255.255.255.0", len(core_devices))
+            device_config = create_device_config(device, device_type, assigned_ip, "255.255.255.0", len(core_devices) + num_switches )
             device_configurations.append(device_config)
 
         for i, device in enumerate(core_devices):
@@ -85,7 +85,7 @@ def configure_top_layers(dist_devices, core_devices, ip_base):
         # Handle 2-tier collapsed network: all devices in dist_devices are now core devices
         for i, device in enumerate(dist_devices):
             assigned_ip, device_type = assign_ip_to_device(device, ip_base, i)
-            device_config = create_device_config(device, "Core", assigned_ip, "255.255.255.0", len(dist_devices))
+            device_config = create_device_config(device, "Core", assigned_ip, "255.255.255.0", len(dist_devices) + num_switches)
             device_configurations.append(device_config)
 
     return device_configurations
@@ -217,7 +217,7 @@ access_switches = ["Access_1", "Access_2", "Access_3", "Access_4"]
 ip_base = "192.168.1.0"  # Base IP for assignment
 
 # Build the topology and configure the devices
-device_configurations = configure_top_layers(distribution_devices, core_devices, ip_base)
+device_configurations = configure_top_layers(distribution_devices, core_devices, access_switches, ip_base)
 
 # Display the device configurations
 display_device_configurations(device_configurations)

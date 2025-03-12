@@ -2,6 +2,7 @@ import networkx as nx
 from access_layer import create_optimal_vlan_network, visualize_graph
 from access_configuration import configure_devices, display_device_configurations
 from top_layers import build_topology
+from top_layers_configuration import configure_top_layers
 
 MINIMUM_ROUTING = 4
 SWITCHES_MINIMUM_MULTIPLIER = 7
@@ -55,7 +56,8 @@ class GraphManager:
         print("Devices assigned to layers:", self.layers)
 
         # Create the topology
-        self.access_graph, self.top_graph, self.access_device_config = self.create_optimized_topology()
+        (self.access_graph, self.top_graph, self.access_device_config,
+         self.top_device_config) = self.create_optimized_topology()
 
     def assign_devices_to_layers(self):
         """
@@ -120,6 +122,14 @@ class GraphManager:
             [device.name for device in self.layers["Core"]],
             main_access_switches
         )
+
+        top_layer_configurations = configure_top_layers(
+            [device.name for device in self.layers["Distribution"]],
+            [device.name for device in self.layers["Core"]],
+            main_access_switches,
+            self.ip_base
+        )
+
         # Display configurations
         print("\nDevice Configurations for Access Layer:")
         display_device_configurations(device_configurations)
@@ -133,9 +143,8 @@ class GraphManager:
         print("\nMain Access Switch Configurations:")
         display_device_configurations(main_switch_configurations)
 
-        # Future: Add Core and Distribution Layers
-        print("Topology created with access layer (core/distribution layers are placeholders).")
-        return access_graph, top_graph, device_configurations
+        print("Topology created.")
+        return access_graph, top_graph, device_configurations, top_layer_configurations
 
     def draw_topology(self):
         """
