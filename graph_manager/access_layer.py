@@ -147,6 +147,7 @@ def visualize_graph(G, title):
 
 
 # Example Usage
+"""
 switch_count = 4
 computer_count = 15
 mode = 1  # 0 for fault-tolerant, 1 for scalable
@@ -157,3 +158,4 @@ visualize_graph(optimal_vlan_graph, "Optimal VLAN-Based Network")
 # Print VLAN assignments using the original device names
 for node, vlan_id in optimal_vlan_graph.nodes(data="vlan"):
     print(f"{node} -> VLAN {vlan_id}")
+"""

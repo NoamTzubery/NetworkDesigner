@@ -108,8 +108,8 @@ def draw_topology(G):
 
 if __name__ == "__main__":
     # Define devices in each layer
-    core_devices = ["Core_1", "Core_2"]  # Change to an empty list to test two-tier topology
-    distribution_devices = ["Dist_1", "Dist_2", "Dist_3"]
+    core_devices = ["Core_1"]  # Change to an empty list to test two-tier topology
+    distribution_devices = ["Dist_1"]
     access_switches = ["Access_1", "Access_2", "Access_3", "Access_4"]
 
     # Build and visualize the topology

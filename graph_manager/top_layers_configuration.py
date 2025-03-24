@@ -210,7 +210,7 @@ def draw_topology(G):
 
 
 # Example usage:
-
+"""
 core_devices = ["Core_1", "Core_2"]  # Change to an empty list to test two-tier topology
 distribution_devices = ["Dist_1", "Dist_2", "Dist_3"]
 access_switches = ["Access_1", "Access_2", "Access_3", "Access_4"]
@@ -225,3 +225,4 @@ display_device_configurations(device_configurations)
 # Build and visualize the topology graph
 network_graph = build_topology(core_devices, distribution_devices, access_switches)
 draw_topology(network_graph)
+"""
