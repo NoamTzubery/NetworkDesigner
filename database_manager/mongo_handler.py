@@ -57,8 +57,14 @@ class Database:
 
     @staticmethod
     def get_user_graphs(user_id):
-        """
-        Retrieve all graphs created by a specific user.
-        """
         graphs = graphs_collection.find({"user_id": user_id})
-        return [{"_id": str(graph["_id"]), "access_graph": graph["access_graph"], "top_graph": graph["top_graph"]} for graph in graphs]
+        user_graph = []
+
+        for graph in graphs:
+            user_graph.append({
+                "id": str(graph["_id"]),
+                "access_graph": graph["access_graph"],
+                "top_graph": graph["top_graph"]
+            })
+
+        return user_graph

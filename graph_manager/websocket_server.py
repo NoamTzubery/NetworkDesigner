@@ -34,7 +34,8 @@ async def handler(websocket, path):
                 "user_id": result["user_id"]
             }))
             print(f"New user registered: {username}")
-            return  # Disconnect after registration, or allow login next
+            # Optionally, you can choose to log the user in immediately or ask them to log in.
+            return
 
         # Step 3: Handle login
         elif action == "login":
@@ -43,41 +44,46 @@ async def handler(websocket, path):
                 await websocket.send(json.dumps({"error": "Authentication failed"}))
                 return
             print(f"User {username} authenticated with role: {user['role']}")
-
         else:
             await websocket.send(json.dumps({"error": "Invalid action. Must be 'login' or 'signup'."}))
             return
 
-        # Step 4: Wait for the graph configuration after login
-        request = await websocket.recv()
-        print("Received request from client:", request)
-        data = json.loads(request)
+        # Step 4: Enter a loop to handle multiple graph creation requests after login
+        while True:
+            try:
+                request = await websocket.recv()
+            except websockets.exceptions.ConnectionClosed:
+                print("Connection closed by the client.")
+                break
 
-        num_routers = data.get("num_routers", 2)
-        num_mls = data.get("num_mls", 2)
-        num_switches = data.get("num_switches", 4)
-        num_computers = data.get("num_computers", 15)
-        mode = data.get("mode", 1)
-        ip_base = data.get("ip_base", "192.168.0.0")
+            print("Received request from client:", request)
+            data = json.loads(request)
 
-        # Step 5: Instantiate GraphManager and create graphs
-        graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode, ip_base)
+            # Extract graph configuration parameters (you can also add an "action" field here if needed)
+            num_routers = data.get("num_routers", 2)
+            num_mls = data.get("num_mls", 2)
+            num_switches = data.get("num_switches", 4)
+            num_computers = data.get("num_computers", 15)
+            mode = data.get("mode", 1)
+            ip_base = data.get("ip_base", "192.168.0.0")
 
-        access_graph_data = json_graph.node_link_data(graph_manager.access_graph)
-        top_graph_data = json_graph.node_link_data(graph_manager.top_graph)
+            # Step 5: Instantiate GraphManager and create graphs
+            graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode, ip_base)
+            access_graph_data = json_graph.node_link_data(graph_manager.access_graph)
+            top_graph_data = json_graph.node_link_data(graph_manager.top_graph)
 
-        graph_id = Database.save_graph(user["user_id"], access_graph_data, top_graph_data)
+            graph_id = Database.save_graph(user["user_id"], access_graph_data, top_graph_data)
 
-        # Step 6: Send response
-        message = {
-            "message": "Graph created and saved.",
-            "graph_id": graph_id,
-            "access_graph": access_graph_data,
-            "top_graph": top_graph_data
-        }
+            # Step 6: Send response with the created graphs
+            message = {
+                "message": "Graph created and saved.",
+                "graph_id": graph_id,
+                "access_graph": access_graph_data,
+                "top_graph": top_graph_data
+            }
 
-        await websocket.send(json.dumps(message))
-        print("Data sent to client.")
+            await websocket.send(json.dumps(message))
+            print("Data sent to client.")
 
     except Exception as e:
         error_msg = f"Error: {e}"
@@ -88,7 +94,7 @@ async def handler(websocket, path):
 async def main():
     async with websockets.serve(handler, "localhost", 6789):
         print("WebSocket server started on ws://localhost:6789")
-        await asyncio.Future()  # Keep server running
+        await asyncio.Future()  # Keep the server running
 
 
 if __name__ == "__main__":

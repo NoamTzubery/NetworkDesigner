@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="83b1ea81-f8f5-4782-913c-3466619c0f7d" name="Changes" comment="added vlan attribute for separation of each vlan to the nodes.">
+    <list default="true" id="83b1ea81-f8f5-4782-913c-3466619c0f7d" name="Changes" comment="user log in and sign in using mongoDB">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database_manager/mongo_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/database_manager/mongo_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graph_manager/websocket_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/graph_manager/websocket_server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,26 +45,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.access_configuration.executor": "Run",
-    "Python.access_layer.executor": "Run",
-    "Python.graph_creation.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.top_layers.executor": "Run",
-    "Python.top_layers_configuration.executor": "Run",
-    "Python.websocket_server.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "develop",
-    "last_opened_file_path": "C:/Users/anima/PycharmProjects/NetworkDesigner/communication_manager",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.access_configuration.executor&quot;: &quot;Run&quot;,
+    &quot;Python.access_layer.executor&quot;: &quot;Run&quot;,
+    &quot;Python.graph_creation.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.top_layers.executor&quot;: &quot;Run&quot;,
+    &quot;Python.top_layers_configuration.executor&quot;: &quot;Run&quot;,
+    &quot;Python.websocket_server.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/anima/PycharmProjects/NetworkDesigner/communication_manager&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\anima\PycharmProjects\NetworkDesigner\communication_manager" />
@@ -96,7 +98,8 @@
       <workItem from="1736491544910" duration="64576000" />
       <workItem from="1738836755097" duration="19532000" />
       <workItem from="1739341229387" duration="5772000" />
-      <workItem from="1739864483287" duration="20608000" />
+      <workItem from="1739864483287" duration="47653000" />
+      <workItem from="1742805641351" duration="27322000" />
     </task>
     <task id="LOCAL-00001" summary="started implementing the communication between the server and the client.">
       <option name="closed" value="true" />
@@ -210,7 +213,39 @@
       <option name="project" value="LOCAL" />
       <updated>1740302230771</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="removed the vlan naming convention due to the addition of vlan attribute">
+      <option name="closed" value="true" />
+      <created>1741165717089</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1741165717089</updated>
+    </task>
+    <task id="LOCAL-00016" summary="changed the way i choose the configuration for the top 2 layers. store it all in a map and in the future i will add a way to send it in telnet.">
+      <option name="closed" value="true" />
+      <created>1741174308238</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1741174308238</updated>
+    </task>
+    <task id="LOCAL-00017" summary="implemented the top layer configurations into the main class.">
+      <option name="closed" value="true" />
+      <created>1741764255854</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1741764255854</updated>
+    </task>
+    <task id="LOCAL-00018" summary="user log in and sign in using mongoDB">
+      <option name="closed" value="true" />
+      <created>1742805345623</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1742805345623</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -242,15 +277,19 @@
     <MESSAGE value="started to change the important parts towards implementing all new changes" />
     <MESSAGE value="added the option to get ip base from user." />
     <MESSAGE value="added vlan attribute for separation of each vlan to the nodes." />
-    <option name="LAST_COMMIT_MESSAGE" value="added vlan attribute for separation of each vlan to the nodes." />
+    <MESSAGE value="removed the vlan naming convention due to the addition of vlan attribute" />
+    <MESSAGE value="changed the way i choose the configuration for the top 2 layers. store it all in a map and in the future i will add a way to send it in telnet." />
+    <MESSAGE value="implemented the top layer configurations into the main class." />
+    <MESSAGE value="user log in and sign in using mongoDB" />
+    <option name="LAST_COMMIT_MESSAGE" value="user log in and sign in using mongoDB" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/NetworkDesigner$top_layers_configuration.coverage" NAME="top_layers_configuration Coverage Results" MODIFIED="1738158447233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
+    <SUITE FILE_PATH="coverage/NetworkDesigner$top_layers_configuration.coverage" NAME="top_layers_configuration Coverage Results" MODIFIED="1741175090456" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$access_configuration.coverage" NAME="access_configuration Coverage Results" MODIFIED="1737371970335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
-    <SUITE FILE_PATH="coverage/NetworkDesigner$access_layer.coverage" NAME="access_layer Coverage Results" MODIFIED="1740303770904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
-    <SUITE FILE_PATH="coverage/NetworkDesigner$top_layers.coverage" NAME="top_layers Coverage Results" MODIFIED="1739881200509" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
-    <SUITE FILE_PATH="coverage/NetworkDesigner$websocket_server.coverage" NAME="websocket_server Coverage Results" MODIFIED="1740303615784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
-    <SUITE FILE_PATH="coverage/NetworkDesigner$graph_creation.coverage" NAME="graph_creation Coverage Results" MODIFIED="1739346013996" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
+    <SUITE FILE_PATH="coverage/NetworkDesigner$access_layer.coverage" NAME="access_layer Coverage Results" MODIFIED="1741769169389" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
+    <SUITE FILE_PATH="coverage/NetworkDesigner$top_layers.coverage" NAME="top_layers Coverage Results" MODIFIED="1741779158538" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
+    <SUITE FILE_PATH="coverage/NetworkDesigner$websocket_server.coverage" NAME="websocket_server Coverage Results" MODIFIED="1743665551825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
+    <SUITE FILE_PATH="coverage/NetworkDesigner$graph_creation.coverage" NAME="graph_creation Coverage Results" MODIFIED="1741764195609" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$main.coverage" NAME="main Coverage Results" MODIFIED="1733918891787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
