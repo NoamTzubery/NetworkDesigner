@@ -57,14 +57,21 @@ class Database:
 
     @staticmethod
     def get_user_graphs(user_id):
-        graphs = graphs_collection.find({"user_id": user_id})
-        user_graph = []
+        user = users_collection.find_one({"_id": user_id})
+        if not user:
+            return {"error": "User not found."}
 
+        if user["role"] == "Admin":
+            graphs = graphs_collection.find()  # Fetch all graphs
+        else:
+            graphs = graphs_collection.find({"user_id": user_id})  # Fetch only user's graphs
+
+        user_graphs = []
         for graph in graphs:
-            user_graph.append({
+            user_graphs.append({
                 "id": str(graph["_id"]),
                 "access_graph": graph["access_graph"],
                 "top_graph": graph["top_graph"]
             })
 
-        return user_graph
+        return user_graphs

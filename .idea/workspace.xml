@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="83b1ea81-f8f5-4782-913c-3466619c0f7d" name="Changes" comment="user log in and sign in using mongoDB">
+    <list default="true" id="83b1ea81-f8f5-4782-913c-3466619c0f7d" name="Changes" comment="started to implement getting all graphs from user.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database_manager/mongo_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/database_manager/mongo_handler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/graph_manager/websocket_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/graph_manager/websocket_server.py" afterDir="false" />
@@ -99,7 +99,7 @@
       <workItem from="1738836755097" duration="19532000" />
       <workItem from="1739341229387" duration="5772000" />
       <workItem from="1739864483287" duration="47653000" />
-      <workItem from="1742805641351" duration="27322000" />
+      <workItem from="1742805641351" duration="46884000" />
     </task>
     <task id="LOCAL-00001" summary="started implementing the communication between the server and the client.">
       <option name="closed" value="true" />
@@ -245,7 +245,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742805345623</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="started to implement getting all graphs from user.">
+      <option name="closed" value="true" />
+      <created>1743668298582</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1743668298582</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -281,14 +289,15 @@
     <MESSAGE value="changed the way i choose the configuration for the top 2 layers. store it all in a map and in the future i will add a way to send it in telnet." />
     <MESSAGE value="implemented the top layer configurations into the main class." />
     <MESSAGE value="user log in and sign in using mongoDB" />
-    <option name="LAST_COMMIT_MESSAGE" value="user log in and sign in using mongoDB" />
+    <MESSAGE value="started to implement getting all graphs from user." />
+    <option name="LAST_COMMIT_MESSAGE" value="started to implement getting all graphs from user." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NetworkDesigner$top_layers_configuration.coverage" NAME="top_layers_configuration Coverage Results" MODIFIED="1741175090456" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$access_configuration.coverage" NAME="access_configuration Coverage Results" MODIFIED="1737371970335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$access_layer.coverage" NAME="access_layer Coverage Results" MODIFIED="1741769169389" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$top_layers.coverage" NAME="top_layers Coverage Results" MODIFIED="1741779158538" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
-    <SUITE FILE_PATH="coverage/NetworkDesigner$websocket_server.coverage" NAME="websocket_server Coverage Results" MODIFIED="1743665551825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
+    <SUITE FILE_PATH="coverage/NetworkDesigner$websocket_server.coverage" NAME="websocket_server Coverage Results" MODIFIED="1744571385725" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$graph_creation.coverage" NAME="graph_creation Coverage Results" MODIFIED="1741764195609" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/graph_manager" />
     <SUITE FILE_PATH="coverage/NetworkDesigner$main.coverage" NAME="main Coverage Results" MODIFIED="1733918891787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>

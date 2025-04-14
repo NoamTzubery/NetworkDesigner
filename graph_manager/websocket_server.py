@@ -34,7 +34,6 @@ async def handler(websocket, path):
                 "user_id": result["user_id"]
             }))
             print(f"New user registered: {username}")
-            # Optionally, you can choose to log the user in immediately or ask them to log in.
             return
 
         # Step 3: Handle login
@@ -48,7 +47,7 @@ async def handler(websocket, path):
             await websocket.send(json.dumps({"error": "Invalid action. Must be 'login' or 'signup'."}))
             return
 
-        # Step 4: Enter a loop to handle multiple graph creation requests after login
+        # Step 4: Enter a loop to handle multiple requests after login
         while True:
             try:
                 request = await websocket.recv()
@@ -58,32 +57,46 @@ async def handler(websocket, path):
 
             print("Received request from client:", request)
             data = json.loads(request)
+            req_action = data.get("action", "")
 
-            # Extract graph configuration parameters (you can also add an "action" field here if needed)
-            num_routers = data.get("num_routers", 2)
-            num_mls = data.get("num_mls", 2)
-            num_switches = data.get("num_switches", 4)
-            num_computers = data.get("num_computers", 15)
-            mode = data.get("mode", 1)
-            ip_base = data.get("ip_base", "192.168.0.0")
+            if req_action == "create_graph":
+                # Extract graph configuration parameters
+                num_routers = data.get("num_routers", 2)
+                num_mls = data.get("num_mls", 2)
+                num_switches = data.get("num_switches", 4)
+                num_computers = data.get("num_computers", 15)
+                mode = data.get("mode", 1)
+                ip_base = data.get("ip_base", "192.168.0.0")
 
-            # Step 5: Instantiate GraphManager and create graphs
-            graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode, ip_base)
-            access_graph_data = json_graph.node_link_data(graph_manager.access_graph)
-            top_graph_data = json_graph.node_link_data(graph_manager.top_graph)
+                # Instantiate GraphManager and create graphs
+                graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode, ip_base)
+                access_graph_data = json_graph.node_link_data(graph_manager.access_graph)
+                top_graph_data = json_graph.node_link_data(graph_manager.top_graph)
 
-            graph_id = Database.save_graph(user["user_id"], access_graph_data, top_graph_data)
+                graph_id = Database.save_graph(user["user_id"], access_graph_data, top_graph_data)
 
-            # Step 6: Send response with the created graphs
-            message = {
-                "message": "Graph created and saved.",
-                "graph_id": graph_id,
-                "access_graph": access_graph_data,
-                "top_graph": top_graph_data
-            }
+                # Send response with the created graphs
+                message = {
+                    "message": "Graph created and saved.",
+                    "graph_id": graph_id,
+                    "access_graph": access_graph_data,
+                    "top_graph": top_graph_data
+                }
 
-            await websocket.send(json.dumps(message))
-            print("Data sent to client.")
+                await websocket.send(json.dumps(message))
+                print("Graph creation data sent to client.")
+
+            elif req_action == "get_history":
+                # Retrieve past topologies using the provided get_user_graphs function
+                user_graphs = Database.get_user_graphs(user["user_id"])
+                response = {"graphs": user_graphs}
+                await websocket.send(json.dumps(response))
+                print("Sent topology history to client.")
+
+            else:
+                # If the action is not recognized
+                await websocket.send(json.dumps({"error": "Unknown action."}))
+                print("Unknown action received from client.")
 
     except Exception as e:
         error_msg = f"Error: {e}"
