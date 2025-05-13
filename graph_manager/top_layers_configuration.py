@@ -1,6 +1,7 @@
 import math
 import networkx as nx
 import matplotlib.pyplot as plt
+import ipaddress
 
 # Constants for network configuration
 MAX_BITS_IN_IP = 32
@@ -47,17 +48,20 @@ def assign_ip_to_device(device_name, base_ip, offset):
     return assigned_ip, device_type
 
 
-def create_device_config(device_name, device_type, assigned_ip, subnet_mask, connections_count):
+def create_device_config(device_name, device_type, assigned_ip, subnet_mask, connections_count, subnet=None):
     """
     Create the configuration for each device (either Core or Distribution).
     """
-    return {
+    config = {
         "name": device_name,
         "type": device_type,
         "ip_address": assigned_ip,
         "subnet_mask": subnet_mask,
         "connections_count": connections_count
     }
+    if subnet:
+        config["subnet"] = subnet
+    return config
 
 
 def configure_top_layers(dist_devices, core_devices, access_switches, ip_base):
@@ -66,18 +70,44 @@ def configure_top_layers(dist_devices, core_devices, access_switches, ip_base):
     """
     device_configurations = []
     num_switches = len(access_switches)
+
+    # Determine a default mask (e.g., /24)
+    default_mask = "255.255.255.0"
+
+    # Build a network object for the base prefix
+    try:
+        base_network = ipaddress.ip_network(f"{ip_base}/{default_mask}", strict=False)
+    except ValueError:
+        base_network = None
+
     # Check if we have Core devices
     if core_devices:
         print("Configuring 3-tier network (Core + Distribution)...")
         # Handle 3-tier network: Core + Distribution
         for i, device in enumerate(dist_devices):
             assigned_ip, device_type = assign_ip_to_device(device, ip_base, i)
-            device_config = create_device_config(device, device_type, assigned_ip, "255.255.255.0", len(core_devices) + num_switches )
+            subnet_str = str(base_network) if base_network else None
+            device_config = create_device_config(
+                device,
+                device_type,
+                assigned_ip,
+                default_mask,
+                len(core_devices) + num_switches,
+                subnet=subnet_str
+            )
             device_configurations.append(device_config)
 
         for i, device in enumerate(core_devices):
             assigned_ip, device_type = assign_ip_to_device(device, ip_base, len(dist_devices) + i)
-            device_config = create_device_config(device, device_type, assigned_ip, "255.255.255.0", len(dist_devices))
+            subnet_str = str(base_network) if base_network else None
+            device_config = create_device_config(
+                device,
+                device_type,
+                assigned_ip,
+                default_mask,
+                len(dist_devices),
+                subnet=subnet_str
+            )
             device_configurations.append(device_config)
 
     else:
@@ -85,7 +115,15 @@ def configure_top_layers(dist_devices, core_devices, access_switches, ip_base):
         # Handle 2-tier collapsed network: all devices in dist_devices are now core devices
         for i, device in enumerate(dist_devices):
             assigned_ip, device_type = assign_ip_to_device(device, ip_base, i)
-            device_config = create_device_config(device, "Core", assigned_ip, "255.255.255.0", len(dist_devices) + num_switches)
+            subnet_str = str(base_network) if base_network else None
+            device_config = create_device_config(
+                device,
+                "Core",
+                assigned_ip,
+                default_mask,
+                len(dist_devices) + num_switches,
+                subnet=subnet_str
+            )
             device_configurations.append(device_config)
 
     return device_configurations
@@ -100,9 +138,10 @@ def display_device_configurations(device_configurations):
         print(f"Type: {device['type']}")
         print(f"IP Address: {device['ip_address']}")
         print(f"Subnet Mask: {device['subnet_mask']}")
+        if 'subnet' in device:
+            print(f"Subnet: {device['subnet']}")
         print(f"Connections Count: {device['connections_count']}")
         print("-" * 30)
-
 
 # Network topology generation
 def create_core_layer(core_devices, dist_devices):
@@ -160,13 +199,10 @@ def build_topology(core_devices, dist_devices, access_switches):
 
     # Create edges based on the layers
     if core_devices:
-        # Three-tier topology
         print("Creating a three-tier topology.")
         G.add_edges_from(create_core_layer(core_devices, dist_devices))
     else:
-        # Collapsed to two tiers
         print("Core layer is empty, collapsing to two-tier topology.")
-        # All distribution devices are now core devices
         for dist_device in dist_devices:
             G.nodes[dist_device]['layer'] = 'Core'
 
@@ -207,22 +243,3 @@ def draw_topology(G):
     plt.title("Network Topology Visualization", fontsize=14)
     plt.axis('off')
     plt.show()
-
-
-# Example usage:
-"""
-core_devices = ["Core_1", "Core_2"]  # Change to an empty list to test two-tier topology
-distribution_devices = ["Dist_1", "Dist_2", "Dist_3"]
-access_switches = ["Access_1", "Access_2", "Access_3", "Access_4"]
-ip_base = "192.168.1.0"  # Base IP for assignment
-
-# Build the topology and configure the devices
-device_configurations = configure_top_layers(distribution_devices, core_devices, access_switches, ip_base)
-
-# Display the device configurations
-display_device_configurations(device_configurations)
-
-# Build and visualize the topology graph
-network_graph = build_topology(core_devices, distribution_devices, access_switches)
-draw_topology(network_graph)
-"""

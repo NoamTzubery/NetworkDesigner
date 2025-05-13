@@ -1,34 +1,40 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import math
+import heapq
 
 
 def prims_minimum_spanning_tree(graph):
     """
-    Implement Prim's algorithm to find the minimum spanning tree of a graph.
+    Implement Prim's algorithm with a min-heap for better efficiency.
     """
     mst = nx.Graph()
     nodes = list(graph.nodes())
+    if not nodes:
+        return mst
 
-    # Start with the first node in the graph
-    visited = {nodes[0]}
-    edges = []
-    # Add all edges from the starting node to the edge list
-    for neighbor in graph.neighbors(nodes[0]):
-        edges.append((nodes[0], neighbor, graph[nodes[0]][neighbor]['weight']))
+    start_node = nodes[0]
+    visited = {start_node}
+    priority_queue = []  # Min-heap to store edges
 
-    # Keep track of visited nodes and form the MST
-    while len(visited) < len(nodes):
-        valid_edges = [edge for edge in edges if edge[1] not in visited]
-        edge = min(valid_edges, key=lambda x: x[2])  # Get the edge with the minimum weight
+    # Add all edges from the starting node to the priority queue
+    for neighbor in graph.neighbors(start_node):
+        weight = graph[start_node][neighbor]['weight']
+        heapq.heappush(priority_queue, (weight, start_node, neighbor))
 
-        # Add the edge to the MST
-        mst.add_edge(edge[0], edge[1], weight=edge[2])
-        visited.add(edge[1])
+    while priority_queue:
+        weight, u, v = heapq.heappop(priority_queue)
 
-        for neighbor in graph.neighbors(edge[1]):
-            if neighbor not in visited:
-                edges.append((edge[1], neighbor, graph[edge[1]][neighbor]['weight']))
+        if v not in visited:
+            visited.add(v)
+            mst.add_edge(u, v, weight=weight)
+
+            # Add new edges from the newly visited node to the priority queue
+            for neighbor in graph.neighbors(v):
+                if neighbor not in visited:
+                    new_weight = graph[v][neighbor]['weight']
+                    heapq.heappush(priority_queue, (new_weight, v, neighbor))
+
     return mst
 
 

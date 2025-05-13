@@ -114,12 +114,10 @@ def assign_ip_to_device(device_name, base_ip, offset):
 def configure_devices(vlans, ip_base):
     """
     Configure all devices with IPs, VLANs, and prepare for Telnet.
+    Now also returns the next free IP after the last broadcast.
     """
     # Step 1: Calculate total hosts per VLAN
-    total_hosts = []
-    for vlan in vlans:
-        vlan_host_count = len(vlan)
-        total_hosts.append(vlan_host_count)
+    total_hosts = [len(vlan) for vlan in vlans]
 
     # Step 2: Calculate VLSM subnets
     vlsm_subnets = calculate_vlsm(ip_base, total_hosts)
@@ -127,28 +125,32 @@ def configure_devices(vlans, ip_base):
     # Step 3: Configure devices
     device_configurations = []
     main_switches = []
-    first = True
     for vlan_id, (vlan_devices, subnet) in enumerate(zip(vlans, vlsm_subnets), start=1):
-        # Extract subnet details
-        gateway_ip = subnet["first_ip"]  # First usable IP is the gateway
+        gateway_ip = subnet["first_ip"]
         subnet_mask = subnet["subnet_mask"]
+
+        # Mark the first device as the main switch
         first = True
-        # Assign IPs to devices
         for i, device in enumerate(vlan_devices):
-            device_config = assign_ip_to_device(device, gateway_ip, i + 1)  # Start assigning from gateway + 1
+            cfg = assign_ip_to_device(device, gateway_ip, i + 1)
             if first:
                 main_switches.append(device)
                 first = False
-            # Add additional details to device configuration
-            device_config["subnet_mask"] = subnet_mask
-            device_config["vlan_id"] = vlan_id
-            device_config["gateway"] = gateway_ip
 
-            # Append to final configurations
-            device_configurations.append(device_config)
+            cfg.update({
+                "subnet_mask": subnet_mask,
+                "vlan_id": vlan_id,
+                "gateway": gateway_ip
+            })
+            device_configurations.append(cfg)
 
-    # Return device configurations
-    return device_configurations, main_switches
+    # --- NEW: compute next free IP after all subnets ---
+    total_allocated = sum(subnet["size"] for subnet in vlsm_subnets)
+    next_ip_int = ip_to_int(ip_base) + total_allocated
+    next_free_ip = int_to_ip(next_ip_int)
+
+    # Return all three
+    return device_configurations, main_switches, next_free_ip
 
 
 def display_device_configurations(device_configurations):

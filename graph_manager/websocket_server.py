@@ -72,19 +72,24 @@ async def handler(websocket, path):
                 graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode, ip_base)
                 access_graph_data = json_graph.node_link_data(graph_manager.access_graph)
                 top_graph_data = json_graph.node_link_data(graph_manager.top_graph)
+                access_configuration = graph_manager.access_device_config
+                top_layer_configurations = graph_manager.top_device_config
 
-                graph_id = Database.save_graph(user["user_id"], access_graph_data, top_graph_data)
+                graph_id = Database.save_graph(user["user_id"], access_graph_data, top_graph_data, access_configuration,
+                                               top_layer_configurations)
 
-                # Send response with the created graphs
+                # Send response with the created graphs and configurations
                 message = {
                     "message": "Graph created and saved.",
                     "graph_id": graph_id,
                     "access_graph": access_graph_data,
-                    "top_graph": top_graph_data
+                    "top_graph": top_graph_data,
+                    "access_configuration": access_configuration,
+                    "top_layer_configurations": top_layer_configurations
                 }
 
                 await websocket.send(json.dumps(message))
-                print("Graph creation data sent to client.")
+                print("Graph creation data and configurations sent to client.")
 
             elif req_action == "get_history":
                 # Retrieve past topologies using the provided get_user_graphs function

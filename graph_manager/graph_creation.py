@@ -116,7 +116,7 @@ class GraphManager:
 
         # Configure Access Layer Devices
 
-        device_configurations, main_access_switches = configure_devices(vlans, self.ip_base)
+        device_configurations, main_access_switches, next_ip = configure_devices(vlans, self.ip_base)
         top_graph = build_topology(
             [device.name for device in self.layers["Distribution"]],
             [device.name for device in self.layers["Core"]],
@@ -127,7 +127,7 @@ class GraphManager:
             [device.name for device in self.layers["Distribution"]],
             [device.name for device in self.layers["Core"]],
             main_access_switches,
-            self.ip_base
+            next_ip
         )
 
         # Display configurations
