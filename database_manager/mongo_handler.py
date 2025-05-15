@@ -1,3 +1,4 @@
+# database_manager/mongo_handler.py
 import pymongo
 import bcrypt
 import uuid
@@ -7,7 +8,7 @@ from bson.objectid import ObjectId
 # MongoDB Connection
 client = MongoClient("mongodb://localhost:27017/")
 db = client["network_topology"]
-users_collection = db["users"]
+users_collection  = db["users"]
 graphs_collection = db["graphs"]
 
 
@@ -51,15 +52,22 @@ class Database:
         return None
 
     @staticmethod
-    def save_graph(user_id, access_graph, top_graph,
-                   access_configuration=None, top_layer_configurations=None):
+    def save_graph(user_id,
+                   access_graph,
+                   top_graph,
+                   access_configuration=None,
+                   top_layer_configurations=None,
+                   topology_name=None,  # ← new
+                   vlan_count=-1        # ← new
+                   ):
         """
-        Save a new network topology for the given user, including
-        both access-layer and top-layer configurations.
-        Returns the string ID of the inserted document.
+        Save a new network topology for the given user, now including
+        user-defined name and VLAN count.
         """
         graph_data = {
             "user_id": user_id,
+            "topology_name": topology_name or "",
+            "vlan_count": vlan_count,
             "access_graph": access_graph,
             "top_graph": top_graph,
             "access_configuration": access_configuration or [],
@@ -73,7 +81,13 @@ class Database:
         """
         Fetch saved topologies for a given user.
         Admins get all; regular users only their own.
-        Returns a list of dicts with the graph details and configs.
+        Returns a list of dicts with:
+          - id: the topology_name
+          - access_graph
+          - top_graph
+          - access_configuration
+          - top_layer_configurations
+        (no vlan_count or topology_name fields returned separately)
         """
         user = users_collection.find_one({"_id": user_id})
         if not user:
@@ -90,7 +104,7 @@ class Database:
         user_graphs = []
         for doc in cursor:
             user_graphs.append({
-                "id": str(doc["_id"]),
+                "id": doc.get("topology_name", ""),
                 "access_graph": doc.get("access_graph"),
                 "top_graph": doc.get("top_graph"),
                 "access_configuration": doc.get("access_configuration", []),

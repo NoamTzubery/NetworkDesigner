@@ -1,3 +1,4 @@
+# server.py
 import asyncio
 import json
 import websockets
@@ -68,20 +69,42 @@ async def handler(websocket, path):
                 mode = data.get("mode", 1)
                 ip_base = data.get("ip_base", "192.168.0.0")
 
-                # Instantiate GraphManager and create graphs
-                graph_manager = GraphManager(num_routers, num_mls, num_switches, num_computers, mode, ip_base)
+                # ── NEW: pull topology_name & vlan_count from client
+                topology_name = data.get("topology_name", "Untitled Topology")
+                vlan_count    = data.get("vlan_count", -1)
+
+                # Instantiate GraphManager with VLAN count
+                graph_manager = GraphManager(
+                    num_routers,
+                    num_mls,
+                    num_switches,
+                    num_computers,
+                    mode,
+                    ip_base,
+                    vlan_count
+                )
+
                 access_graph_data = json_graph.node_link_data(graph_manager.access_graph)
                 top_graph_data = json_graph.node_link_data(graph_manager.top_graph)
                 access_configuration = graph_manager.access_device_config
                 top_layer_configurations = graph_manager.top_device_config
 
-                graph_id = Database.save_graph(user["user_id"], access_graph_data, top_graph_data, access_configuration,
-                                               top_layer_configurations)
+                graph_id = Database.save_graph(
+                    user["user_id"],
+                    access_graph_data,
+                    top_graph_data,
+                    access_configuration,
+                    top_layer_configurations,
+                    topology_name,
+                    vlan_count
+                )
 
-                # Send response with the created graphs and configurations
+                # ── NEW: include them in the reply
                 message = {
                     "message": "Graph created and saved.",
                     "graph_id": graph_id,
+                    "topology_name": topology_name,
+                    "vlan_count": vlan_count,
                     "access_graph": access_graph_data,
                     "top_graph": top_graph_data,
                     "access_configuration": access_configuration,
@@ -92,14 +115,12 @@ async def handler(websocket, path):
                 print("Graph creation data and configurations sent to client.")
 
             elif req_action == "get_history":
-                # Retrieve past topologies using the provided get_user_graphs function
                 user_graphs = Database.get_user_graphs(user["user_id"])
                 response = {"graphs": user_graphs}
                 await websocket.send(json.dumps(response))
                 print("Sent topology history to client.")
 
             else:
-                # If the action is not recognized
                 await websocket.send(json.dumps({"error": "Unknown action."}))
                 print("Unknown action received from client.")
 

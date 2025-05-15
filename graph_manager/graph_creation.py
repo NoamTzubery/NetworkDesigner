@@ -20,7 +20,7 @@ class Device:
 
 
 class GraphManager:
-    def __init__(self, num_routers, num_mls, num_switches, num_computers, mode=1, ip_base="192.168.0.0"):
+    def __init__(self, num_routers, num_mls, num_switches, num_computers, mode=1, ip_base="192.168.0.0", vlan_count=-1):
         """
         :param num_routers: Number of routers
         :param num_mls: Number of multilayer (L3) switches
@@ -38,6 +38,7 @@ class GraphManager:
         self.num_computers = num_computers
         self.ip_base = ip_base
         self.mode = mode
+        self.vlan_count = vlan_count
 
         # Naming devices
         self.routers = [Device(f'Router_{i + 1}', "Router", routing=True) for i in range(num_routers)]
@@ -111,7 +112,7 @@ class GraphManager:
         computers = [device for device in vlan_devices if "Computer" in device]
 
         print(f"Access layer devices:\nSwitches: {switches}\nComputers: {computers}")
-        vlan_graph, vlans = create_optimal_vlan_network(len(switches), len(computers), self.mode)
+        vlan_graph, vlans = create_optimal_vlan_network(len(switches), len(computers), self.mode, self.vlan_count)
         access_graph = nx.compose(access_graph, vlan_graph)
 
         # Configure Access Layer Devices

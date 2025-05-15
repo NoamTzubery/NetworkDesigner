@@ -91,14 +91,25 @@ def create_scalable_network(switches, computers):
         return G
 
 
-def bin_packing_vlans(switch_count, computer_count):
+import math
+
+
+def bin_packing_vlans(switch_count, computer_count, vlan_count=-1):
     """
-    Distribute switches and computers across VLANs in a simple round-robin fashion.
+    Distribute switches and computers across VLANs.
+    If vlan_count is -1, the VLAN count will be calculated automatically based on a /7 rule.
+    If vlan_count is specified, it will be used directly.
     """
     switches = [f"Switch_{i + 1}" for i in range(switch_count)]
     computers = [f"Computer_{i + 1}" for i in range(computer_count)]
     devices = switches + computers
-    num_vlans = math.ceil(len(devices) / 7)
+
+    if vlan_count == -1:
+        # Automatically calculate the number of VLANs based on the /7 rule
+        num_vlans = math.ceil(len(devices) / 7)
+    else:
+        # Use the provided vlan_count
+        num_vlans = vlan_count
 
     vlans = [[] for _ in range(num_vlans)]
     for i, device in enumerate(devices):
@@ -109,12 +120,12 @@ def bin_packing_vlans(switch_count, computer_count):
     return vlans
 
 
-def create_optimal_vlan_network(switch_count, computer_count, mode):
+def create_optimal_vlan_network(switch_count, computer_count, mode, vlan_count=-1):
     """
     Determine the optimal number of VLANs and create their topologies based on the mode.
     The original device names are kept and only a 'vlan' attribute is added to each node.
     """
-    vlans = bin_packing_vlans(switch_count, computer_count)
+    vlans = bin_packing_vlans(switch_count, computer_count, vlan_count)
     G = nx.Graph()
     vlan_mapping = {}  # Dictionary to store VLAN assignment per node
 
